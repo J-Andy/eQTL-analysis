@@ -115,8 +115,8 @@ for (i in 1:nrow(significant_results)) {
   gene <- significant_results$Gene[i]
   
   # Get mutation status and KO values for the significant pair
-  mutation_status <- as.factor(mutations[mutation, , drop = TRUE])  # Ensure it's a vector
-  ko_values <- gene_kos[, gene, drop = TRUE]  # Ensure this is also a vector
+  mutation_status <- as.factor(unlist(mutations[mutation, , drop = TRUE]))  
+  ko_values <- unlist(gene_kos[, gene, drop = TRUE])
   
   # Combine into a data frame for plotting
   plot_data <- data.frame(
