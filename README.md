@@ -52,15 +52,15 @@ The shell script will:
  - Run the Singularity container and bind the local output directory to the container’s /usr/src/app/output.
 
 ### 4. Running Unit Tests
-To run the unit tests, use ```bash run_tests.sh ``` script.
+To run the unit tests, use ```run_tests.sh ``` script.
 
-Unit Test Details
+***Unit Test Details***
 
-Data Alignment Test:
+1. Data Alignment Test:
 Ensures that the mutation data (Mutations.tsv) and gene knockout data (Gene_KOs.tsv) are properly aligned by common models (cell lines).
 The test verifies that the aligned datasets share the same number of common cell lines.
 
-T-test Validation:
+2. T-test Validation:
 Checks that Welch’s t-tests return valid p-values when comparing mutation presence with gene knockout outcomes.
 The test simulates mutation and fold change data and ensures the p-value is numeric and less than 1.
 Test Output:
@@ -78,4 +78,6 @@ Boxplots: Individual PNG files for each significant mutation-gene association.
 
 
 ## Download the Prebuilt Singularity Image
-If you prefer not to build the container yourself, you can download the prebuilt Singularity image (`r-analysis.sif`) from the following link: https://drive.google.com/file/d/17zTK5rTlSquPqw5A8xGvv1kwUP1szQDB/view?usp=sharing 
+If you prefer not to build the container yourself, you can download the prebuilt Singularity image (`r-analysis.sif`) from the following link: 
+
+https://drive.google.com/file/d/17zTK5rTlSquPqw5A8xGvv1kwUP1szQDB/view?usp=sharing 
