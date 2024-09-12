@@ -21,6 +21,7 @@ The container runs the R script `main.R` which:
 
 Clone the repository containing the `Singularity` definition file, R scripts, and data files:
 
+```bash
 git clone https://github.com/J-Andy/eQTL-analysis.git
 cd eQTL-analysis
 
