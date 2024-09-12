@@ -1,9 +1,23 @@
 library(testthat)
+library(dplyr)
 
-test_that("Test merging works correctly", {
-  merged <- inner_join(mutations_long, gene_kos_long, by = "Cell_Line")
-  expect_true(nrow(merged) > 0)
+# Test data alignment (common models)
+test_that("Data alignment between mutations and gene KO datasets works", {
+  mutations <- read.table("Mutations.tsv", header = TRUE, sep = "\t", row.names = 1)
+  gene_kos <- read.table("Gene_KOs.tsv", header = TRUE, sep = "\t", row.names = 1)
+
+  # Align mutation and KO data by model (cell line)
+  common_models <- intersect(colnames(mutations), row.names(gene_kos))
+  
+  expect_true(length(common_models) > 0, info = "There should be common cell lines between the datasets")
+  
+  mutations <- mutations[, common_models]
+  gene_kos <- gene_kos[common_models, ]
+  
+  expect_equal(ncol(mutations), length(common_models), info = "Mutations should be aligned with the common cell lines")
+  expect_equal(nrow(gene_kos), length(common_models), info = "Gene KO should be aligned with the common cell lines")
 })
+
 
 test_that("Test that t-tests return p-values", {
   sample_data <- data.frame(
