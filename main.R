@@ -1,10 +1,11 @@
-# main.r
-
 # Load necessary libraries
 library(dplyr)
 library(ggplot2)
 library(qvalue) 
 library(ggrepel)
+
+# Set the output directory (inside the container, this will be bind-mounted to the host)
+output_dir <- "/usr/src/app/output"
 
 # Load the mutation and gene KO datasets
 mutations <- read.table("Mutations.tsv", header = TRUE, sep = "\t", row.names = 1)
@@ -24,7 +25,6 @@ for (mutation in rownames(mutations)) {
     
     # Extract mutation status and gene KO values
     mutation_status <- as.numeric(mutations[mutation, ])
-    
     ko_values <- as.numeric(gene_kos[, gene])
     
     # Ensure there are both mutated (1) and non-mutated (0) cell lines
@@ -47,23 +47,20 @@ for (mutation in rownames(mutations)) {
   }
 }
 
-
 # FDR Correction using Benjamini-Hochberg procedure
 results$FDR <- p.adjust(results$P_value, method = "BH")
 
-# Filter for significant results (e.g., p < 0.05)
+# Filter for significant results (FDR < 0.05)
 significant_results <- results %>% filter(FDR < 0.05)
 
-# Save the results to a file
-write.table(significant_results, "significant_mutation_gene_associations.tsv", sep = "\t", row.names = FALSE)
+# Save the significant results to a file in the output directory
+write.table(significant_results, file.path(output_dir, "significant_mutation_gene_associations.tsv"), sep = "\t", row.names = FALSE)
 
 # Print completion message
 print("Statistical analysis complete. Significant associations saved to 'significant_mutation_gene_associations.tsv'.")
 
 
-
 # Q-Q Plot for p-values
-# To visually check if the distribution of observed p-values deviates from the expected uniform distribution under the null hypothesis.
 qqplot_pvalue <- ggplot(results, aes(sample = -log10(P_value))) +
   stat_qq(distribution = stats::qunif) + 
   geom_abline(intercept = 0, slope = 1, color = "red") +
@@ -74,11 +71,11 @@ qqplot_pvalue <- ggplot(results, aes(sample = -log10(P_value))) +
   ) +
   theme_minimal()
 
-# Save the Q-Q plot
-ggsave("qqplot_pvalues.png", plot = qqplot_pvalue, width = 6, height = 6)
+# Save the Q-Q plot in the output directory
+ggsave(file.path(output_dir, "qqplot_pvalues.png"), plot = qqplot_pvalue, width = 6, height = 6)
+
 
 # Histogram of p-values 
-# Distribution of p-values should be uniform under the null hypothesis.
 hist_pvalue <- ggplot(results, aes(x = P_value)) +
   geom_histogram(binwidth = 0.05, fill = "lightblue", color = "black") +
   labs(
@@ -88,13 +85,8 @@ hist_pvalue <- ggplot(results, aes(x = P_value)) +
   ) +
   theme_minimal()
 
-# Save the histogram
-ggsave("histogram_pvalues.png", plot = hist_pvalue, width = 6, height = 6)
-
-# Print completion message
-print("Plots saved as 'qqplot_pvalues.png' and 'histogram_pvalues.png'.")
-
-
+# Save the histogram in the output directory
+ggsave(file.path(output_dir, "histogram_pvalues.png"), plot = hist_pvalue, width = 6, height = 6)
 
 
 # Volcano Plot
@@ -104,19 +96,15 @@ volcano_plot <- ggplot(results, aes(x = T_statistic, y = -log10(FDR))) +
   labs(
     title = "Volcano Plot",
     x = "T-statistic (Effect Size)",
-    y = "-log10(P-value)"
+    y = "-log10(FDR)"
   ) +
   theme_minimal() +
   geom_text_repel(data = filter(results, FDR < 0.05),  # Label only significant points
                   aes(label = paste(Mutation, Gene, sep = ":")),
                   size = 3)
 
-volcano_plot
-
-# Save the volcano plot
-ggsave("volcano_plot.png", plot = volcano_plot, width = 8, height = 6)
-
-
+# Save the volcano plot in the output directory
+ggsave(file.path(output_dir, "volcano_plot.png"), plot = volcano_plot, width = 8, height = 6)
 
 
 # Boxplots for Significant Associations
@@ -148,6 +136,8 @@ for (i in 1:nrow(significant_results)) {
     ) +
     theme_minimal()
   
-  # Save each boxplot as a separate file
-  ggsave(paste0("boxplot_", mutation, "_", gene, ".png"), plot = boxplot, width = 6, height = 4)
+  # Save each boxplot as a separate file in the output directory
+  ggsave(file.path(output_dir, paste0("boxplot_", mutation, "_", gene, ".png")), plot = boxplot, width = 6, height = 4)
 }
+
+print("Completed!")
