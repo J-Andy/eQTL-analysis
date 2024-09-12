@@ -26,26 +26,33 @@ git clone https://github.com/J-Andy/eQTL-analysis.git
 cd eQTL-analysis
 ```
 
-### 2. Clone the repository
+### 2. Build the Singularity image
 You can build the Singularity image locally using the following command:
+```bash
 singularity build r-analysis.sif Singularity
+```
 
 If you don't have root access on the system, like me, you can use the remote build service:
+```bash
 singularity build --remote r-analysis.sif Singularity
-
+```
 ### 3. Running the Analysis
 After building the container, run the analysis using this script: 
+
 ./run_analysis.sh
 
 **Make sure the `run_analysis.sh` script is executable**:
+```bash
   chmod +x run_analysis.sh
+```
+
 
 The shell script will:
  - Create an output directory in your current directory.
  - Run the Singularity container and bind the local output directory to the container’s /usr/src/app/output.
 
 ### 4. Running Unit Tests
-To run the unit tests, use run_tests.sh script.
+To run the unit tests, use ```bash run_tests.sh ``` script.
 
 Unit Test Details
 
