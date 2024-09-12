@@ -24,7 +24,7 @@ Clone the repository containing the `Singularity` definition file, R scripts, an
 ```bash
 git clone https://github.com/J-Andy/eQTL-analysis.git
 cd eQTL-analysis
-
+```
 
 ### 2. Clone the repository
 You can build the Singularity image locally using the following command:
