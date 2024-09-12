@@ -107,7 +107,6 @@ volcano_plot <- ggplot(results, aes(x = T_statistic, y = -log10(FDR))) +
 ggsave(file.path(output_dir, "volcano_plot.png"), plot = volcano_plot, width = 8, height = 6)
 
 
-# Boxplots for Significant Associations
 # For each significant mutation-gene pair, create a boxplot of KO values by mutation status
 for (i in 1:nrow(significant_results)) {
   
@@ -116,8 +115,8 @@ for (i in 1:nrow(significant_results)) {
   gene <- significant_results$Gene[i]
   
   # Get mutation status and KO values for the significant pair
-  mutation_status <- as.factor(mutations[mutation, ])
-  ko_values <- gene_kos[, gene]
+  mutation_status <- as.factor(mutations[mutation, , drop = TRUE])  # Ensure it's a vector
+  ko_values <- gene_kos[, gene, drop = TRUE]  # Ensure this is also a vector
   
   # Combine into a data frame for plotting
   plot_data <- data.frame(
